@@ -1,0 +1,199 @@
+Unix:
+
+Eject a tape:
+mt -f /dev/nst0 eject
+
+Search filesize:
+du -hx --max-depth=1 | grep G | sort -n
+
+List diskspace of each folder:
+for i in `ls` ; do du -sh $i; done
+
+Displays quantity of connections to port 80 on a per IP basis:
+clear;while x=0; do clear;date;echo "";echo "  [Count] | [IP ADDR]";echo "-------------------";netstat -np|grep :80|grep -v LISTEN|awk '{print $5}'|cut -d: -f1|uniq -c; sleep 5;done
+
+List all ips connected to host:
+netstat -lantp | grep ESTABLISHED |awk '{print $5}' | awk -F: '{print $1}' | sort -u
+
+Lowercase every file in directory:
+for i in `ls -1`; do mv $i "${i,,}" ; done
+
+Save file you edited in vim w/o needed permissions:
+:w !sudo tee %
+
+Mounted filesystems:
+mount | column -t
+
+Display top 10 processes sorted by mem usage:
+ps aux | sort -nk +4 | tail
+
+Show apps using internet:
+lsof -P -i -n
+
+password protect a file:
+vim -x filename
+
+Extract a tarball without local save:
+wget -qO - "link" | tar zxvf -
+
+Remove all but one file:
+rm -f !(survivior.txt)
+
+processor/memory bandwith:
+dd if=/dev/zero of=/dev/null bs=1M count=32768
+
+Search most common IP addresses in apache logs:
+tail -10000 /var/log/httpd/access_log | awk '{print $1}' | sort | uniq -c | sort -n | tail
+
+List duplicate files in human readable format:
+diff -urp /originaldirectory /modifieddirectory
+
+Replace all occurances of foo with bar in file.txt:
+sed 's/foo/bar/g' file.txt
+
+Delete blank lines in file.txt:
+sed '/^$/d' file.txt
+
+Search for .bam files anywhere in the current directory recursively:
+find . -name "*.bam"
+
+Find files containing text (-l outputs only the file names, -i ignores the case -r descends into subdirectories)
+grep -lir "some text" *
+
+Show running services:
+systemctl --no-page -t service -a --state running --no-legend
+
+show distribution information:
+echo /etc/*_ver* /etc/*-rel*; cat /etc/*_ver* /etc/*-rel*
+
+Clear Memcache:
+free -m && sync && echo 3 > /proc/sys/vm/drop_caches && free -m
+
+Download complete website:
+wget --mirror --convert-links --adjust-extension --page-requisites --no-parent brendanlavelle.com
+
+Clear failed bacula backups:
+for i in $(echo -ne "sql\nselect JobId from Job where name like '%' and JobStatus = 'f' or JobStatus = 'A' order by JobId;" | /backup/bacula/bconsole | egrep "^\|" | grep -v JobId | sed 's/| //g;s/,//g;s/\ |//g'); do echo "del jobid=$i" | /backup/bacula/bconsole; done
+
+Truncate bacula files:
+/backup/bacula/truncate_volumes.sh $(grep dbname /backup/bacula/bacula-dir.conf | cut -d\" -f 2)
+
+Delete a range of backup files:
+for i in {1569..1589}; do echo "del jobid=$i"; done | /backup/bacula/bconsole 
+
+Install VMware Tools:
+/usr/bin/vmware-config-tools.pl --default
+
+Show when a user was created:
+ls -ld /home/user/ | awk '{ print $6,$7,$8 }'  
+
+List all domains on server:
+apachectl -S 2>&1 | grep "port 80 namevhost" | awk '{print $4}' | sort -n
+
+list how long apache has been running for:
+ps -eo comm,etime | grep httpd
+
+Clear Qmail Queue:
+
+/var/qmail/bin/qmailctl kill
+
+find /var/qmail/queue/mess -type f -exec rm {} \;
+find /var/qmail/queue/info -type f -exec rm {} \;
+find /var/qmail/queue/local -type f -exec rm {} \;
+find /var/qmail/queue/intd -type f -exec rm {} \;
+find /var/qmail/queue/todo -type f -exec rm {} \;
+find /var/qmail/queue/remote -type f -exec rm {} \;
+
+/var/qmail/bin/qmailctl start
+
+List files that were deleted but are still being held by proccesses:
+lsof -nP +L1
+
+clear semiphores for apache:
+for i in $(ipcs -s | grep httpd | awk '{print $2}'); do ipcrm sem $i; done
+
+Clear spam in postfix:
+find /var/spool/postfix/deferred/ -type f \
+	-exec grep -l 'db.php' '{}' \; | \
+	xargs -n1 basename | xargs -n1 postsuper -d
+
+Restart a service:
+svc -d /service/*
+svc -u /service/*
+svstat /service/*
+
+List all PHP scripts currently running:
+lsof +r 1 -p `ps axww | grep httpd | grep -v grep | awk ' { if(!str) { str=$1 } else { str=str","$1}}END{print str}'` | grep vhosts | grep php
+	
+Clear docker containers:
+docker rm `docker ps --no-trunc -aq`
+
+Clear all docker images:
+docker rmi $(docker images -q)
+
+Clear stalled docker images:
+docker rmi $(docker images | egrep 'months|weeks' | awk '{ print $1":"$2 }')
+
+Copy all symlinks:
+find /home -type l -print | rsync -av --files-from=- / inetu_support@xpere-vmweb03:/
+
+list connections greater than 90 CISCO:
+sh local-host connection tcp 90
+
+Check postfix queue size:
+time mailq | grep -c '^[0-9A-Z]'
+
+Check http or https:
+curl -Is  localhost | head -1
+
+List number of files in each folder:
+for i in /dev/*; do echo $i; find $i |wc -l; done
+
+Block an IP in IPTABLES:
+iptables -A INPUT -s 160.202.163.124 -j DROP
+
+Change permissions of all files and folders individually:
+find . -type d -exec chmod 644 {} \;
+find . -type f -exec chmod 755 {} \;
+
+Start postgres:
+sudo -u postgres /usr/lib64/pgsql92/bin/pg_ctl start -w -D /var/pgsql/data
+
+Install nginx latest:
+sudo amazon-linux-extras install nginx1=latest -y
+
+pcap:
+sudo tcpdump -i any -s0 dst test-crowdstrike -w test-crowdstrike.pcap
+
+Cisco:
+list connections greater than 90:
+sh local-host connection tcp 90
+
+Add a User to the VPN:
+username <username> password <password> privilege 0
+username <username> attributes
+service-type remote-access
+
+Show Shuns:
+
+sh shun
+
+Window$:
+
+Remove admin account:
+net user administrator /active:no
+
+AWS:
+
+SSM session: 
+
+aws ssm start-session --target i-07f2ac984ff5ee50e
+
+EPEL:
+sudo amazon-linux-extras install epel -y
+
+Hostnames and IDs:
+aws ec2 describe-instances --query 'Reservations[].Instances[].[InstanceId,Tags[?Key==`Name`]| [0].Value]'
+
+Generate GuardDuty Alerts:
+dig GuardDutyC2ActivityB.com any
