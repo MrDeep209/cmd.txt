@@ -70,7 +70,7 @@ Clear Memcache:
 free -m && sync && echo 3 > /proc/sys/vm/drop_caches && free -m
 
 Download complete website:
-wget --mirror --convert-links --adjust-extension --page-requisites --no-parent brendanlavelle.com
+wget --mirror --convert-links --adjust-extension --page-requisites --no-parent domain.com
 
 Clear failed bacula backups:
 for i in $(echo -ne "sql\nselect JobId from Job where name like '%' and JobStatus = 'f' or JobStatus = 'A' order by JobId;" | /backup/bacula/bconsole | egrep "^\|" | grep -v JobId | sed 's/| //g;s/,//g;s/\ |//g'); do echo "del jobid=$i" | /backup/bacula/bconsole; done
@@ -135,10 +135,7 @@ Clear stalled docker images:
 docker rmi $(docker images | egrep 'months|weeks' | awk '{ print $1":"$2 }')
 
 Copy all symlinks:
-find /home -type l -print | rsync -av --files-from=- / inetu_support@xpere-vmweb03:/
-
-list connections greater than 90 CISCO:
-sh local-host connection tcp 90
+find /home -type l -print | rsync -av --files-from=- / root@domain:/
 
 Check postfix queue size:
 time mailq | grep -c '^[0-9A-Z]'
@@ -159,14 +156,14 @@ find . -type f -exec chmod 755 {} \;
 Start postgres:
 sudo -u postgres /usr/lib64/pgsql92/bin/pg_ctl start -w -D /var/pgsql/data
 
-Install nginx latest:
-sudo amazon-linux-extras install nginx1=latest -y
-
 pcap:
 sudo tcpdump -i any -s0 dst test-crowdstrike -w test-crowdstrike.pcap
 
 Cisco:
 list connections greater than 90:
+sh local-host connection tcp 90
+
+list connections w count greater than 90 CISCO:
 sh local-host connection tcp 90
 
 Add a User to the VPN:
@@ -197,3 +194,6 @@ aws ec2 describe-instances --query 'Reservations[].Instances[].[InstanceId,Tags[
 
 Generate GuardDuty Alerts:
 dig GuardDutyC2ActivityB.com any
+
+Install nginx latest:
+sudo amazon-linux-extras install nginx1=latest -y
